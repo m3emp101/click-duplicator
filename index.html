@@ -1,9 +1,1135 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Click Duplicator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campaign Manager</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --danger: #dc2626;
+      --warning: #f97316;
+      --success: #16a34a;
+      --shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #1f2937, #0f172a 55%) no-repeat,
+        var(--bg);
+      min-height: 100vh;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(15, 23, 42, 0.84);
+      color: #f8fafc;
+      padding: 24px 40px 120px;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: -80px auto 48px;
+      padding: 0 24px;
+      flex: 1;
+    }
+
+    .app-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .full-span {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #111827;
+    }
+
+    label span {
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 12px;
+      display: block;
+      margin-top: 4px;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="number"],
+    input[type="color"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 15px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="url"]:focus,
+    input[type="number"]:focus,
+    input[type="color"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    input[type="color"] {
+      height: 48px;
+      padding: 4px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 8px;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 12px 20px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+      color: #f8fafc;
+      box-shadow: 0 10px 18px rgba(59, 130, 246, 0.35);
+    }
+
+    button.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(59, 130, 246, 0.45);
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+
+    button.secondary:hover {
+      background: #d1d5db;
+    }
+
+    button.danger {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    button.danger:hover {
+      background: #fecaca;
+    }
+
+    button.warning {
+      background: #fff7ed;
+      color: var(--warning);
+    }
+
+    button.warning:hover {
+      background: #ffedd5;
+    }
+
+    button.small {
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 14px;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #1f2937;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tr {
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--muted);
+      border: 2px dashed #e2e8f0;
+      border-radius: 14px;
+      margin-top: 16px;
+    }
+
+    .chip {
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #alert {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    #alert.error {
+      background: #fee2e2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    #alert.success {
+      background: #dcfce7;
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+    }
+
+    #alert.info {
+      background: #dbeafe;
+      color: var(--primary-dark);
+      border: 1px solid #bfdbfe;
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px 16px;
+      color: #cbd5f5;
+      font-size: 13px;
+      background: rgba(15, 23, 42, 0.92);
+      margin-top: auto;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .link-button {
+      background: transparent;
+      color: var(--primary-dark);
+      padding: 0;
+      border-radius: 0;
+      font-weight: 600;
+    }
+
+    .link-button:hover {
+      text-decoration: underline;
+    }
+
+    /* Preview view */
+    #preview-view {
+      max-width: 960px;
+      width: 100%;
+      margin: 32px auto;
+      padding: 0 24px 64px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      color: #f8fafc;
+    }
+
+    .preview-header h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .preview-card {
+      background: rgba(15, 23, 42, 0.12);
+      border-radius: var(--radius);
+      padding: 4px;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+    }
+
+    .preview-canvas {
+      border-radius: calc(var(--radius) - 4px);
+      background: #111827;
+      min-height: 600px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .squeeze-frame {
+      border: none;
+      width: 100%;
+      height: 100%;
+      background: #0b1220;
+    }
+
+    .fallback-message {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #e5e7eb;
+      padding: 40px;
+      gap: 16px;
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.6), rgba(15, 118, 110, 0.5));
+    }
+
+    .fallback-message a {
+      color: #fcd34d;
+      text-decoration: none;
+    }
+
+    .popup-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.84);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      padding: 30px;
+    }
+
+    .popup-box {
+      width: min(520px, 100%);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f9fafb;
+      box-shadow: 0 30px 60px rgba(15, 23, 42, 0.35);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .popup-header {
+      padding: 18px 24px;
+      color: #111827;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.4px;
+    }
+
+    .popup-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .popup-body p {
+      margin: 0;
+      color: #1f2937;
+      line-height: 1.5;
+    }
+
+    .popup-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .stat-card {
+      flex: 1 1 160px;
+      background: rgba(15, 23, 42, 0.7);
+      color: #e5e7eb;
+      border-radius: 14px;
+      padding: 18px 20px;
+      min-width: 200px;
+    }
+
+    .stat-card span {
+      display: block;
+      font-size: 13px;
+      opacity: 0.75;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    .stat-card strong {
+      font-size: 18px;
+    }
+
+    .backdrop-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e5e7eb;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 720px) {
+      header {
+        padding: 24px 20px 120px;
+      }
+
+      main {
+        padding: 0 16px;
+        margin-top: -70px;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .action-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello from Click Duplicator!</h1>
+  <header>
+    <h1>Campaign Experience Builder</h1>
+  </header>
+
+  <main id="manager-app">
+    <section class="app-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+        <h2 style="margin:0;">Create a New Campaign</h2>
+        <span class="chip" id="campaign-count">0 Campaigns</span>
+      </div>
+
+      <form id="campaign-form" autocomplete="off">
+        <div class="field">
+          <label for="campaignName">Campaign Name<span>Name for the campaign.</span></label>
+          <input id="campaignName" name="campaignName" type="text" required placeholder="Top Funnel ? Summer Promo">
+        </div>
+        <div class="field">
+          <label for="urlSlug">URL Slug<span>Unique identity for each campaign (letters, numbers, hyphen).</span></label>
+          <input id="urlSlug" name="urlSlug" type="text" required pattern="[a-z0-9-]+" placeholder="summer-promo-2025">
+        </div>
+        <div class="field">
+          <label for="pageTitle">Page Title<span>Title displayed on the landing page.</span></label>
+          <input id="pageTitle" name="pageTitle" type="text" required placeholder="Create a New Campaign">
+        </div>
+        <div class="field">
+          <label for="squeezeUrl">Squeeze Page URL<span>First page loaded when the campaign URL is visited.</span></label>
+          <input id="squeezeUrl" name="squeezeUrl" type="url" required placeholder="https://example.com/squeeze">
+        </div>
+        <div class="field">
+          <label for="delayPopupUrl">Delay Popup URL<span>Opens in a popup after inactivity (defaults to 15 seconds).</span></label>
+          <input id="delayPopupUrl" name="delayPopupUrl" type="url" placeholder="https://example.com/delay-offer">
+        </div>
+        <div class="field">
+          <label for="delayPopupDelay">Delay Popup Time (seconds)<span>Optional. Leave blank to use 15 seconds.</span></label>
+          <input id="delayPopupDelay" name="delayPopupDelay" type="number" min="1" placeholder="15">
+        </div>
+        <div class="field">
+          <label for="delayCloseUrl">URL After Delay Popup Closes<span>Opens in a new tab after the delay popup is closed.</span></label>
+          <input id="delayCloseUrl" name="delayCloseUrl" type="url" placeholder="https://example.com/upsell">
+        </div>
+        <div class="field">
+          <label for="exitPopupUrl">Exit Popup URL<span>Opens in a popup when the user leaves the page.</span></label>
+          <input id="exitPopupUrl" name="exitPopupUrl" type="url" placeholder="https://example.com/exit-offer">
+        </div>
+        <div class="field">
+          <label for="exitCloseUrl">URL After Exit Popup Closes<span>Opens in a new tab after the exit popup is closed.</span></label>
+          <input id="exitCloseUrl" name="exitCloseUrl" type="url" placeholder="https://example.com/return">
+        </div>
+        <div class="field">
+          <label for="popupColor">Popup Header Colour<span>Applies to both delay and exit popups.</span></label>
+          <input id="popupColor" name="popupColor" type="color" value="#6d28d9">
+        </div>
+        <div class="full-span form-actions">
+          <button type="submit" class="primary" id="submit-button">Create Campaign</button>
+          <button type="button" class="secondary hidden" id="cancel-edit">Cancel Edit</button>
+        </div>
+      </form>
+
+      <div id="alert" class="hidden"></div>
+    </section>
+
+    <section class="app-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <h2 style="margin:0;">Campaign Library</h2>
+        <button type="button" class="secondary" id="export-all">Export All</button>
+      </div>
+
+      <div id="campaign-table-wrapper">
+        <div class="empty-state" id="empty-state">
+          <p>No campaigns yet. Create one above to see it here.</p>
+        </div>
+        <table class="hidden" id="campaign-table" aria-live="polite">
+          <thead>
+            <tr>
+              <th scope="col">Campaign</th>
+              <th scope="col">Slug</th>
+              <th scope="col">Preview URL</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="campaign-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="preview-view" class="hidden">
+    <div class="preview-header">
+      <button type="button" class="backdrop-button" id="back-to-app">? Back to Campaign Manager</button>
+      <h2 id="preview-heading">Preview</h2>
+    </div>
+    <div class="preview-card">
+      <div class="preview-canvas">
+        <iframe id="squeeze-frame" class="squeeze-frame" title="Squeeze Page Preview"></iframe>
+        <div id="squeeze-fallback" class="fallback-message hidden">
+          <h3>Unable to display squeeze page preview</h3>
+          <p>The target website prevented embedding. You can still open it in a new tab below.</p>
+          <p><a id="open-squeeze" href="#" target="_blank" rel="noopener">Open squeeze page</a></p>
+        </div>
+
+        <div id="delay-popup" class="popup-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="delay-popup-title">
+          <div class="popup-box">
+            <div id="delay-popup-header" class="popup-header">Delay Offer</div>
+            <div class="popup-body">
+              <p id="delay-popup-description">Stay tuned for our exclusive offer.</p>
+              <div class="popup-actions">
+                <a id="delay-popup-open" class="primary button-link" href="#" target="_blank" rel="noopener" style="text-decoration:none;padding:10px 18px;border-radius:10px;background:var(--primary);color:#ffffff;font-weight:600;">Visit Offer</a>
+                <button type="button" class="secondary" id="delay-popup-close">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="exit-popup" class="popup-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="exit-popup-title">
+          <div class="popup-box">
+            <div id="exit-popup-header" class="popup-header">Wait! Before you go?</div>
+            <div class="popup-body">
+              <p id="exit-popup-description">We have one last thing to show you.</p>
+              <div class="popup-actions">
+                <a id="exit-popup-open" class="primary button-link" href="#" target="_blank" rel="noopener" style="text-decoration:none;padding:10px 18px;border-radius:10px;background:var(--primary);color:#ffffff;font-weight:600;">See Exit Offer</a>
+                <button type="button" class="secondary" id="exit-popup-close">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="preview-overlay" class="fallback-message hidden" style="background:rgba(20,20,31,0.92);">
+          <h3 id="preview-overlay-title">Campaign not found</h3>
+          <p id="preview-overlay-message">Return to the manager to create or select a campaign.</p>
+          <button type="button" class="backdrop-button" id="overlay-back">Back to Manager</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <span>Campaign Name</span>
+        <strong id="stat-name">?</strong>
+      </div>
+      <div class="stat-card">
+        <span>Slug</span>
+        <strong id="stat-slug">?</strong>
+      </div>
+      <div class="stat-card">
+        <span>Delay Popup Delay</span>
+        <strong id="stat-delay">?</strong>
+      </div>
+      <div class="stat-card">
+        <span>Popup Colour</span>
+        <strong id="stat-colour">?</strong>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ? <span id="year"></span> Click Duplicator. All rights reserved.
+  </footer>
+
+  <script>
+    (function() {
+      const defaultDelaySeconds = 15;
+      const form = document.getElementById('campaign-form');
+      const alertBox = document.getElementById('alert');
+      const submitButton = document.getElementById('submit-button');
+      const cancelEditButton = document.getElementById('cancel-edit');
+      const campaignCount = document.getElementById('campaign-count');
+      const table = document.getElementById('campaign-table');
+      const tableBody = document.getElementById('campaign-table-body');
+      const emptyState = document.getElementById('empty-state');
+      const exportButton = document.getElementById('export-all');
+
+      let campaigns = loadCampaigns();
+      let editingSlug = null;
+
+      function loadCampaigns() {
+        try {
+          const raw = localStorage.getItem('cd-campaigns');
+          return raw ? JSON.parse(raw) : [];
+        } catch (error) {
+          console.error('Failed to parse campaigns from storage', error);
+          return [];
+        }
+      }
+
+      function persistCampaigns() {
+        localStorage.setItem('cd-campaigns', JSON.stringify(campaigns));
+      }
+
+      function showAlert(type, message) {
+        alertBox.textContent = message;
+        alertBox.className = '';
+        alertBox.classList.add(type ? type : 'info');
+        alertBox.id = 'alert';
+        if (message) {
+          alertBox.classList.remove('hidden');
+        } else {
+          alertBox.classList.add('hidden');
+        }
+      }
+
+      function resetForm() {
+        form.reset();
+        document.getElementById('popupColor').value = '#6d28d9';
+        editingSlug = null;
+        submitButton.textContent = 'Create Campaign';
+        cancelEditButton.classList.add('hidden');
+        form.dataset.mode = 'create';
+      }
+
+      function renderCampaigns() {
+        campaignCount.textContent = campaigns.length === 1 ? '1 Campaign' : `${campaigns.length} Campaigns`;
+        if (!campaigns.length) {
+          emptyState.classList.remove('hidden');
+          table.classList.add('hidden');
+          tableBody.innerHTML = '';
+          return;
+        }
+
+        emptyState.classList.add('hidden');
+        table.classList.remove('hidden');
+        tableBody.innerHTML = '';
+
+        campaigns.sort((a, b) => a.campaignName.localeCompare(b.campaignName));
+        campaigns.forEach((campaign) => {
+          const row = document.createElement('tr');
+          const previewUrl = `${location.origin}${location.pathname}?preview=${encodeURIComponent(campaign.urlSlug)}`;
+
+          row.innerHTML = `
+            <td>
+              <strong>${campaign.campaignName}</strong><br>
+              <span style="color: var(--muted); font-size: 13px;">${campaign.pageTitle}</span>
+            </td>
+            <td>${campaign.urlSlug}</td>
+            <td>
+              <a href="${previewUrl}" target="_blank" rel="noopener">${previewUrl}</a>
+            </td>
+            <td>
+              <div class="action-group">
+                <button type="button" class="secondary small" data-action="edit" data-slug="${campaign.urlSlug}">Edit</button>
+                <button type="button" class="warning small" data-action="clone" data-slug="${campaign.urlSlug}">Clone</button>
+                <button type="button" class="danger small" data-action="delete" data-slug="${campaign.urlSlug}">Delete</button>
+                <button type="button" class="primary small" data-action="preview" data-slug="${campaign.urlSlug}">Preview</button>
+              </div>
+            </td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      function findCampaign(slug) {
+        return campaigns.find((item) => item.urlSlug === slug);
+      }
+
+      function slugExists(slug, ignoreSlug) {
+        return campaigns.some((item) => item.urlSlug === slug && item.urlSlug !== ignoreSlug);
+      }
+
+      function normalizeSlug(slug) {
+        return slug.toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/-{2,}/g, '-').replace(/^-|-$/g, '');
+      }
+
+      function cloneSlug(baseSlug) {
+        let attempt = `${baseSlug}-copy`;
+        let index = 1;
+        while (campaigns.some((item) => item.urlSlug === attempt)) {
+          index += 1;
+          attempt = `${baseSlug}-copy-${index}`;
+        }
+        return attempt;
+      }
+
+      function getFormData() {
+        const data = {
+          campaignName: form.campaignName.value.trim(),
+          urlSlug: normalizeSlug(form.urlSlug.value),
+          pageTitle: form.pageTitle.value.trim(),
+          squeezeUrl: form.squeezeUrl.value.trim(),
+          delayPopupUrl: form.delayPopupUrl.value.trim(),
+          delayPopupDelay: form.delayPopupDelay.value ? Number(form.delayPopupDelay.value) : null,
+          delayCloseUrl: form.delayCloseUrl.value.trim(),
+          exitPopupUrl: form.exitPopupUrl.value.trim(),
+          exitCloseUrl: form.exitCloseUrl.value.trim(),
+          popupColor: form.popupColor.value
+        };
+
+        if (!data.campaignName || !data.urlSlug || !data.pageTitle || !data.squeezeUrl) {
+          showAlert('error', 'Please fill in the required fields.');
+          return null;
+        }
+
+        if (data.delayPopupDelay !== null && (Number.isNaN(data.delayPopupDelay) || data.delayPopupDelay <= 0)) {
+          showAlert('error', 'Delay popup time must be a positive number.');
+          return null;
+        }
+
+        return data;
+      }
+
+      function handleSubmit(event) {
+        event.preventDefault();
+        const data = getFormData();
+        if (!data) {
+          return;
+        }
+
+        if (slugExists(data.urlSlug, editingSlug)) {
+          showAlert('error', 'URL slug already exists. Please choose a unique value.');
+          return;
+        }
+
+        if (editingSlug) {
+          const index = campaigns.findIndex((item) => item.urlSlug === editingSlug);
+          if (index >= 0) {
+            campaigns[index] = data;
+            persistCampaigns();
+            renderCampaigns();
+            showAlert('success', 'Campaign updated successfully.');
+            resetForm();
+          }
+        } else {
+          campaigns.push(data);
+          persistCampaigns();
+          renderCampaigns();
+          showAlert('success', 'Campaign created successfully.');
+          resetForm();
+        }
+      }
+
+      function enterEditMode(slug) {
+        const campaign = findCampaign(slug);
+        if (!campaign) {
+          showAlert('error', 'Unable to find the selected campaign.');
+          return;
+        }
+
+        editingSlug = slug;
+        submitButton.textContent = 'Update Campaign';
+        cancelEditButton.classList.remove('hidden');
+        form.dataset.mode = 'edit';
+
+        form.campaignName.value = campaign.campaignName;
+        form.urlSlug.value = campaign.urlSlug;
+        form.pageTitle.value = campaign.pageTitle;
+        form.squeezeUrl.value = campaign.squeezeUrl;
+        form.delayPopupUrl.value = campaign.delayPopupUrl;
+        form.delayPopupDelay.value = campaign.delayPopupDelay ? campaign.delayPopupDelay : '';
+        form.delayCloseUrl.value = campaign.delayCloseUrl;
+        form.exitPopupUrl.value = campaign.exitPopupUrl;
+        form.exitCloseUrl.value = campaign.exitCloseUrl;
+        form.popupColor.value = campaign.popupColor || '#6d28d9';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function deleteCampaign(slug) {
+        const campaign = findCampaign(slug);
+        if (!campaign) {
+          showAlert('error', 'Unable to find the campaign to delete.');
+          return;
+        }
+
+        const confirmed = window.confirm(`Delete campaign "${campaign.campaignName}"? This action cannot be undone.`);
+        if (!confirmed) {
+          return;
+        }
+
+        campaigns = campaigns.filter((item) => item.urlSlug !== slug);
+        persistCampaigns();
+        renderCampaigns();
+        showAlert('success', 'Campaign deleted.');
+
+        if (editingSlug === slug) {
+          resetForm();
+        }
+      }
+
+      function cloneCampaign(slug) {
+        const campaign = findCampaign(slug);
+        if (!campaign) {
+          showAlert('error', 'Unable to find the campaign to clone.');
+          return;
+        }
+
+        const clone = { ...campaign };
+        clone.campaignName = `${campaign.campaignName} (Copy)`;
+        clone.urlSlug = cloneSlug(campaign.urlSlug);
+        campaigns.push(clone);
+        persistCampaigns();
+        renderCampaigns();
+        showAlert('success', 'Campaign cloned successfully.');
+      }
+
+      function previewCampaign(slug) {
+        const url = `${location.origin}${location.pathname}?preview=${encodeURIComponent(slug)}`;
+        window.open(url, '_blank');
+      }
+
+      tableBody.addEventListener('click', (event) => {
+        const target = event.target.closest('button');
+        if (!target) {
+          return;
+        }
+
+        const { action, slug } = target.dataset;
+        if (!action || !slug) {
+          return;
+        }
+
+        switch (action) {
+          case 'edit':
+            enterEditMode(slug);
+            break;
+          case 'delete':
+            deleteCampaign(slug);
+            break;
+          case 'clone':
+            cloneCampaign(slug);
+            break;
+          case 'preview':
+            previewCampaign(slug);
+            break;
+          default:
+            break;
+        }
+      });
+
+      cancelEditButton.addEventListener('click', resetForm);
+      form.addEventListener('submit', handleSubmit);
+
+      exportButton.addEventListener('click', () => {
+        if (!campaigns.length) {
+          showAlert('info', 'Nothing to export yet.');
+          return;
+        }
+        const data = JSON.stringify(campaigns, null, 2);
+        navigator.clipboard.writeText(data)
+          .then(() => showAlert('success', 'Campaigns copied to clipboard in JSON format.'))
+          .catch(() => showAlert('info', 'Unable to copy automatically. Downloading file instead.'));
+
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `campaigns-${Date.now()}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      renderCampaigns();
+
+      // Preview logic
+      const previewView = document.getElementById('preview-view');
+      const managerApp = document.getElementById('manager-app');
+      const squeezeFrame = document.getElementById('squeeze-frame');
+      const squeezeFallback = document.getElementById('squeeze-fallback');
+      const openSqueezeLink = document.getElementById('open-squeeze');
+      const delayPopup = document.getElementById('delay-popup');
+      const exitPopup = document.getElementById('exit-popup');
+      const delayPopupHeader = document.getElementById('delay-popup-header');
+      const exitPopupHeader = document.getElementById('exit-popup-header');
+      const delayPopupOpen = document.getElementById('delay-popup-open');
+      const exitPopupOpen = document.getElementById('exit-popup-open');
+      const delayPopupClose = document.getElementById('delay-popup-close');
+      const exitPopupClose = document.getElementById('exit-popup-close');
+      const previewOverlay = document.getElementById('preview-overlay');
+      const overlayBackButton = document.getElementById('overlay-back');
+      const backToApp = document.getElementById('back-to-app');
+      const previewHeading = document.getElementById('preview-heading');
+      const statName = document.getElementById('stat-name');
+      const statSlug = document.getElementById('stat-slug');
+      const statDelay = document.getElementById('stat-delay');
+      const statColour = document.getElementById('stat-colour');
+
+      let previewDelayTimer = null;
+      let exitListenerAttached = false;
+      let exitPopupShown = false;
+
+      function clearPreviewTimers() {
+        if (previewDelayTimer) {
+          clearTimeout(previewDelayTimer);
+          previewDelayTimer = null;
+        }
+      }
+
+      function hidePopups() {
+        delayPopup.classList.add('hidden');
+        exitPopup.classList.add('hidden');
+      }
+
+      function resetPreviewState() {
+        clearPreviewTimers();
+        hidePopups();
+        exitPopupShown = false;
+        if (exitListenerAttached) {
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
+          exitListenerAttached = false;
+        }
+      }
+
+      function handleVisibilityChange() {
+        if (document.visibilityState === 'hidden') {
+          showExitPopup();
+        }
+      }
+
+      function showDelayPopup(campaign) {
+        if (!campaign.delayPopupUrl) {
+          return;
+        }
+
+        delayPopupHeader.style.background = campaign.popupColor || '#6d28d9';
+        delayPopupHeader.textContent = 'Delay Popup Offer';
+        document.getElementById('delay-popup-description').textContent = `Take a look at ${campaign.delayPopupUrl}`;
+        delayPopupOpen.href = campaign.delayPopupUrl;
+
+        delayPopup.classList.remove('hidden');
+        try {
+          window.open(campaign.delayPopupUrl, '_blank');
+        } catch (error) {
+          console.warn('Popup blocked by browser', error);
+        }
+      }
+
+      function showExitPopup() {
+        if (exitPopupShown) {
+          return;
+        }
+
+        const campaignSlug = new URLSearchParams(location.search).get('preview');
+        const campaign = findCampaign(campaignSlug);
+        if (!campaign || !campaign.exitPopupUrl) {
+          return;
+        }
+
+        exitPopupShown = true;
+        exitPopupHeader.style.background = campaign.popupColor || '#6d28d9';
+        exitPopupHeader.textContent = 'Exit Intent Offer';
+        document.getElementById('exit-popup-description').textContent = `Before you go, check ${campaign.exitPopupUrl}`;
+        exitPopupOpen.href = campaign.exitPopupUrl;
+        exitPopup.classList.remove('hidden');
+
+        try {
+          window.open(campaign.exitPopupUrl, '_blank');
+        } catch (error) {
+          console.warn('Popup blocked by browser', error);
+        }
+      }
+
+      delayPopupClose.addEventListener('click', () => {
+        delayPopup.classList.add('hidden');
+        const campaignSlug = new URLSearchParams(location.search).get('preview');
+        const campaign = findCampaign(campaignSlug);
+        if (campaign && campaign.delayCloseUrl) {
+          window.open(campaign.delayCloseUrl, '_blank');
+        }
+      });
+
+      exitPopupClose.addEventListener('click', () => {
+        exitPopup.classList.add('hidden');
+        const campaignSlug = new URLSearchParams(location.search).get('preview');
+        const campaign = findCampaign(campaignSlug);
+        if (campaign && campaign.exitCloseUrl) {
+          window.open(campaign.exitCloseUrl, '_blank');
+        }
+      });
+
+      overlayBackButton.addEventListener('click', () => {
+        window.location.href = window.location.pathname;
+      });
+
+      backToApp.addEventListener('click', () => {
+        window.location.href = window.location.pathname;
+      });
+
+      function showManagerView() {
+        previewView.classList.add('hidden');
+        managerApp.classList.remove('hidden');
+        document.title = 'Campaign Manager';
+        resetPreviewState();
+      }
+
+      function showPreviewView(slug) {
+        const campaign = findCampaign(slug);
+        if (!campaign) {
+          previewView.classList.remove('hidden');
+          managerApp.classList.add('hidden');
+          previewOverlay.classList.remove('hidden');
+          previewHeading.textContent = 'Preview not available';
+          document.title = 'Campaign Preview';
+          return;
+        }
+
+        previewOverlay.classList.add('hidden');
+        managerApp.classList.add('hidden');
+        previewView.classList.remove('hidden');
+        document.title = `Preview ? ${campaign.pageTitle || campaign.campaignName}`;
+
+        previewHeading.textContent = campaign.pageTitle || campaign.campaignName;
+        statName.textContent = campaign.campaignName;
+        statSlug.textContent = campaign.urlSlug;
+        statDelay.textContent = `${campaign.delayPopupDelay || defaultDelaySeconds} seconds`;
+        statColour.textContent = campaign.popupColor;
+        statColour.style.color = campaign.popupColor;
+
+        resetPreviewState();
+
+        if (campaign.squeezeUrl) {
+          squeezeFrame.src = campaign.squeezeUrl;
+          openSqueezeLink.href = campaign.squeezeUrl;
+          squeezeFrame.onload = () => {
+            squeezeFallback.classList.add('hidden');
+          };
+          squeezeFrame.onerror = () => {
+            squeezeFallback.classList.remove('hidden');
+          };
+          setTimeout(() => {
+            if (!squeezeFrame.contentDocument) {
+              squeezeFallback.classList.remove('hidden');
+            }
+          }, 2000);
+        } else {
+          squeezeFrame.removeAttribute('src');
+          squeezeFallback.classList.remove('hidden');
+          openSqueezeLink.href = '#';
+        }
+
+        if (campaign.delayPopupUrl) {
+          const delaySeconds = campaign.delayPopupDelay || defaultDelaySeconds;
+          previewDelayTimer = setTimeout(() => showDelayPopup(campaign), delaySeconds * 1000);
+        }
+
+        if (campaign.exitPopupUrl && !exitListenerAttached) {
+          document.addEventListener('visibilitychange', handleVisibilityChange);
+          exitListenerAttached = true;
+        }
+      }
+
+      const query = new URLSearchParams(window.location.search);
+      const previewSlug = query.get('preview');
+
+      if (previewSlug) {
+        showPreviewView(previewSlug);
+      } else {
+        showManagerView();
+      }
+
+      window.addEventListener('beforeunload', () => {
+        resetPreviewState();
+      });
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
 </body>
 </html>
